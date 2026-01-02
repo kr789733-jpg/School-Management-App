@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shiksha Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide-react/0.263.1/lucide-react.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <div id="auth-screen" class="fixed inset-0 bg-white z-[60] flex items-center justify-center p-6">
+        <div class="w-full max-w-sm space-y-6">
+            <div class="text-center">
+                <div class="bg-blue-600 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i data-lucide="graduation-cap" class="text-white w-10 h-10"></i>
+                </div>
+                <h1 class="text-2xl font-bold">Shiksha Admin</h1>
+                <p class="text-slate-500">School Management System</p>
+            </div>
+            <div class="space-y-4">
+                <input type="email" id="login-email" placeholder="Email" class="w-full p-4 bg-slate-100 rounded-2xl outline-none border-2 border-transparent focus:border-blue-500">
+                <input type="password" id="login-password" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none border-2 border-transparent focus:border-blue-500">
+                <button id="login-btn" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-blue-200 shadow-lg active:scale-95 transition-all">Login / लॉगिन करें</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container" class="hidden min-h-screen flex flex-col">
+        <header class="bg-white border-b px-5 py-4 sticky top-0 z-40 flex justify-between items-center">
+            <div>
+                <h2 id="page-title" class="font-bold text-lg">Dashboard</h2>
+                <div class="flex items-center gap-2">
+                    <span id="role-badge" class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded uppercase"></span>
+                </div>
+            </div>
+            <button id="logout-btn" class="p-2 text-slate-400 hover:text-red-500"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+        </header>
+
+        <main id="main-content" class="flex-grow p-4 pb-24">
+            <div id="view-dashboard" class="view space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-blue-500">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Students</p>
+                        <p id="stat-students" class="text-2xl font-bold">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-green-500 admin-only">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Paid Fees</p>
+                        <p id="stat-paid" class="text-2xl font-bold">0</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 pt-4">
+                    <button onclick="switchView('attendance')" class="flex flex-col items-center p-6 bg-white rounded-3xl shadow-sm border border-slate-100">
+                        <i data-lucide="calendar-check" class="text-blue-600 mb-2"></i>
+                        <span class="text-xs font-bold">Attendance</span>
+                    </button>
+                    <button onclick="switchView('marks')" class="flex flex-col items-center p-6 bg-white rounded-3xl shadow-sm border border-slate-100">
+                        <i data-lucide="award" class="text-purple-600 mb-2"></i>
+                        <span class="text-xs font-bold">Marks</span>
+                    </button>
+                    <button onclick="switchView('students')" class="flex flex-col items-center p-6 bg-white rounded-3xl shadow-sm border border-slate-100 admin-only">
+                        <i data-lucide="users" class="text-orange-600 mb-2"></i>
+                        <span class="text-xs font-bold">Students</span>
+                    </button>
+                    <button onclick="switchView('fees')" class="flex flex-col items-center p-6 bg-white rounded-3xl shadow-sm border border-slate-100 admin-only">
+                        <i data-lucide="indian-rupee" class="text-green-600 mb-2"></i>
+                        <span class="text-xs font-bold">Fees</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="view-students" class="view hidden space-y-4">
+                <button onclick="openModal()" class="w-full bg-slate-900 text-white p-4 rounded-2xl font-bold admin-only">+ New Student</button>
+                <div id="student-list" class="space-y-2"></div>
+            </div>
+
+            <div id="view-attendance" class="view hidden space-y-4">
+                <select id="attn-class-select" class="w-full p-4 bg-white rounded-2xl border shadow-sm outline-none">
+                    <option value="Nursery">Nursery</option><option value="KG">KG</option>
+                    <option value="1">Class 1</option><option value="2">Class 2</option>
+                    <option value="3">Class 3</option><option value="4">Class 4</option>
+                    <option value="5">Class 5</option><option value="6">Class 6</option>
+                </select>
+                <div id="attendance-list" class="space-y-2"></div>
+                <button id="save-attendance" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold hidden">Save Attendance</button>
+            </div>
+
+            <div id="view-fees" class="view hidden space-y-2"></div>
+            
+            <div id="view-marks" class="view hidden space-y-4">
+                <input type="text" id="marks-subject" placeholder="Subject Name" class="w-full p-4 bg-white rounded-2xl border shadow-sm">
+                <div id="marks-list" class="space-y-2"></div>
+                <button id="save-marks" class="w-full bg-purple-600 text-white p-4 rounded-2xl font-bold hidden">Save Marks</button>
+            </div>
+        </main>
+
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around p-2 pb-6 z-50">
+            <button onclick="switchView('dashboard')" class="p-2 flex flex-col items-center text-blue-600"><i data-lucide="home" class="w-6 h-6"></i><span class="text-[10px] font-bold">Home</span></button>
+            <button onclick="switchView('students')" class="p-2 flex flex-col items-center text-slate-400"><i data-lucide="users" class="w-6 h-6"></i><span class="text-[10px] font-bold">Students</span></button>
+            <button onclick="switchView('attendance')" class="p-2 flex flex-col items-center text-slate-400"><i data-lucide="check-square" class="w-6 h-6"></i><span class="text-[10px] font-bold">Attend</span></button>
+            <button onclick="switchView('fees')" class="p-2 flex flex-col items-center text-slate-400 admin-only"><i data-lucide="wallet" class="w-6 h-6"></i><span class="text-[10px] font-bold">Fees</span></button>
+        </nav>
+    </div>
+
+    <div id="student-modal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-6">
+        <div class="bg-white w-full max-w-sm rounded-[32px] p-6 space-y-4">
+            <h2 class="text-xl font-bold">Add Student</h2>
+            <input type="text" id="m-name" placeholder="Full Name" class="w-full p-4 bg-slate-50 rounded-xl outline-none">
+            <select id="m-class" class="w-full p-4 bg-slate-50 rounded-xl outline-none">
+                <option value="Nursery">Nursery</option><option value="KG">KG</option>
+                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            </select>
+            <input type="number" id="m-roll" placeholder="Roll Number" class="w-full p-4 bg-slate-50 rounded-xl outline-none">
+            <input type="tel" id="m-phone" placeholder="Parent Mobile" class="w-full p-4 bg-slate-50 rounded-xl outline-none">
+            <div class="flex gap-2">
+                <button onclick="closeModal()" class="flex-1 p-4 bg-slate-100 rounded-xl font-bold">Cancel</button>
+                <button id="add-student-confirm" class="flex-1 p-4 bg-blue-600 text-white rounded-xl font-bold">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
+
