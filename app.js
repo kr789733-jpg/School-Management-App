@@ -55,7 +55,7 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById('app-container').classList.remove('hidden');
         
         const q = query(
-  collection(db, "artifacts", appId, "public", "data", "users"),
+  collection(db, "users")
   where("email", "==", user.email.toLowerCase())
 );
 
