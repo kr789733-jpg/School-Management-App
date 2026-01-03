@@ -55,7 +55,7 @@ onAuthStateChanged(auth, async (user) => {
         
         const q = query(
   collection(db, "artifacts", appId, "public", "data", "users"),
-  where("email", "==", user.email)
+  where("email", "==", user.email.toLowerCase())
 );
 
 const snap = await getDocs(q);
