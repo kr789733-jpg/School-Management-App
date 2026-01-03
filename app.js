@@ -47,7 +47,7 @@ document.getElementById('login-btn').addEventListener('click', async () => {
 
 document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
         document.getElementById('auth-screen').classList.add('hidden');
