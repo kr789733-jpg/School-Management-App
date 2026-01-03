@@ -1,7 +1,19 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, addDoc, onSnapshot, query, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  addDoc,
+  onSnapshot,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 const firebaseConfig = {
     apiKey: "AIzaSyCz-xq2PL3XA4AuCLLgprvWv1V2iq_OxCU",
     authDomain: "school-management-5bfd3.firebaseapp.com",
@@ -41,14 +53,22 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById('auth-screen').classList.add('hidden');
         document.getElementById('app-container').classList.remove('hidden');
         
-        const email = user.email.toLowerCase();
-        if (email.includes('superadmin')) currentRole = 'superadmin';
-        else if (email.includes('admin')) currentRole = 'admin';
-        else currentRole = 'teacher';
+        const q = query(
+  collection(db, "users"),
+  where("email", "==", user.email)
+);
 
-        document.getElementById('role-badge').innerText = currentRole;
-        applyPermissions();
-        initDataSync();
+const snap = await getDocs(q);
+
+if (!snap.empty) {
+  currentRole = snap.docs[0].data().role;
+} else {
+  currentRole = "teacher";
+}
+
+document.getElementById('role-badge').innerText = currentRole;
+applyPermissions();
+initDataSync();
     } else {
         document.getElementById('auth-screen').classList.remove('hidden');
         document.getElementById('app-container').classList.add('hidden');
